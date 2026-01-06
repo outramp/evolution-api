@@ -1649,7 +1649,16 @@ export class BaileysStartupService extends ChannelStartupService {
               this.logger.warn(`Original message not found for update. Skipping. Key: ${JSON.stringify(key)}`);
               continue;
             }
+            if (!message.remoteJid) {
+              const fallbackKey = findMessage?.key as WAMessageKey | undefined;
+              message.remoteJid = fallbackKey?.remoteJid;
+            }
             message.messageId = findMessage.id;
+          }
+
+          if (!message.remoteJid) {
+            this.logger.warn(`remoteJid missing on message.update. Skipping. Key: ${JSON.stringify(key)}`);
+            continue;
           }
 
           if (update.message === null && update.status === undefined) {
